@@ -162,7 +162,7 @@ async def on_button(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             "Para donar TON:\n"
             "1. Abre *@wallet* en Telegram\n"
             "2. Ve a *Enviar*\n"
-            "3. Busca el usuario del desarrollador\n"
+            "3. Envía TON a esta dirección:\n\n`UQAv_WaJjv6r7Frys8POL1m3xhoAzq7jNjFk7n803b2gmde2`\n\n"
             "4. Envía la cantidad que desees 💎\n\n"
             "¡Cualquier cantidad es muy apreciada! 🙏",
             parse_mode="Markdown", reply_markup=back("donar")
