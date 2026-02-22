@@ -1,3 +1,7 @@
+"""
+🧮 MathMaster Bot v3
+Autor: Alexis Granados Cortez
+"""
 import logging
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler,
@@ -5,7 +9,10 @@ from telegram.ext import (
 )
 from config import BOT_TOKEN
 from data.database import init_db
-from handlers.main import cmd_start, on_button, on_text, WAIT_ANSWER, WAIT_EXAM
+from handlers.main import (
+    cmd_start, on_button, on_text,
+    WAIT_ANSWER, WAIT_EXAM, WAIT_SOLVE, WAIT_GRAPH
+)
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -15,6 +22,7 @@ logging.basicConfig(
 def main():
     init_db()
     app = Application.builder().token(BOT_TOKEN).build()
+
     conv = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(on_button),
@@ -23,6 +31,8 @@ def main():
         states={
             WAIT_ANSWER: [MessageHandler(filters.TEXT & ~filters.COMMAND, on_text)],
             WAIT_EXAM:   [MessageHandler(filters.TEXT & ~filters.COMMAND, on_text)],
+            WAIT_SOLVE:  [MessageHandler(filters.TEXT & ~filters.COMMAND, on_text)],
+            WAIT_GRAPH:  [MessageHandler(filters.TEXT & ~filters.COMMAND, on_text)],
         },
         fallbacks=[
             CommandHandler("start", cmd_start),
@@ -30,9 +40,10 @@ def main():
         ],
         allow_reentry=True,
     )
+
     app.add_handler(conv)
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_text))
-    logging.info("🧮 MathMaster Bot v2 — Iniciado ✅")
+    logging.info("🧮 MathMaster Bot v3 — Iniciado ✅")
     app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
