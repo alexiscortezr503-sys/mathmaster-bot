@@ -1,0 +1,7 @@
+.env
+data/mathmaster.db
+__pycache__/
+*.pyc
+bot.log
+.vscode/
+venv/
