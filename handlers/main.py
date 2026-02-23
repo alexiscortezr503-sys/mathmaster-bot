@@ -142,18 +142,20 @@ async def on_button(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown", reply_markup=donate_menu()
         )
 
-    elif d == "donar_estrellas":
-        await q.edit_message_text(
-            "⭐ *Donar Estrellas de Telegram*\n\n"
-            "Las Estrellas son la moneda oficial de Telegram.\n\n"
-            "Para donar:\n"
-            "1. Abre el perfil del bot\n"
-            "2. Toca los tres puntos (...)\n"
-            "3. Selecciona *'Enviar regalo'*\n"
-            "4. Elige la cantidad de Estrellas ⭐\n\n"
-            "¡Gracias por tu apoyo! 🙏",
-            parse_mode="Markdown", reply_markup=back("donar")
-        )
+        elif d == "donar_estrellas":
+    await q.edit_message_text(
+        "⭐ *Donar Estrellas de Telegram*\n\n"
+        "Las Estrellas son la moneda oficial de Telegram.\n\n"
+        "*Cómo donarme Estrellas:*\n"
+        "1. Abre Telegram y busca *@mkoi.alex*\n"
+        "2. Abre mi perfil\n"
+        "3. Toca los tres puntos *( ... )*\n"
+        "4. Selecciona *'Enviar regalo'*\n"
+        "5. Elige la cantidad de Estrellas ⭐\n\n"
+        "¡Cualquier cantidad es muy apreciada! 🙏\n"
+        "Las Estrellas me ayudan a mantener el bot gratuito para todos. 💪",
+        parse_mode="Markdown", reply_markup=back("donar")
+    )
 
     elif d == "donar_ton":
         await q.edit_message_text(
