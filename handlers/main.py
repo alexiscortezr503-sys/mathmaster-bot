@@ -4,7 +4,6 @@ Handlers completos — MathMaster Bot v3
 import io
 import sympy as sp
 from sympy import symbols, solve, diff, integrate, simplify, sympify
-from sympy.plotting import plot as sp_plot
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -23,16 +22,12 @@ WAIT_GRAPH   = 4
 
 x, y, z = symbols('x y z')
 
-# ─────────────────────────────────────────────────────────────────────────────
-# /start
-# ─────────────────────────────────────────────────────────────────────────────
 async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     u = update.effective_user
     upsert_user(u.id, u.username or "", u.first_name)
     db     = get_user(u.id)
     streak = db.get("streak", 0)
     streak_txt = f"🔥 Racha: *{streak} día{'s' if streak!=1 else ''}* — ¡Sigue así!\n" if streak>1 else ""
-
     text = (
         f"🧮 *¡Bienvenido a MathMaster, {u.first_name}!*\n\n"
         f"{streak_txt}"
@@ -45,9 +40,6 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     else:
         await update.callback_query.edit_message_text(text, parse_mode="Markdown", reply_markup=main_menu())
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Router de botones
-# ─────────────────────────────────────────────────────────────────────────────
 async def on_button(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     q = update.callback_query
     await q.answer()
@@ -68,14 +60,14 @@ async def on_button(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     elif d.startswith("topic_"):
         _, level, topic = d.split("_", 2)
         content = get_content(level, topic)
-        text = content if content else f"📚 *Tema en construcción...*\n¡Pero ya puedes practicar!"
+        text = content if content else "📚 *Tema en construcción...*\n¡Pero ya puedes practicar!"
         await q.edit_message_text(text, parse_mode="Markdown", reply_markup=topic_actions(level, topic))
 
     elif d.startswith("ex_"):
-        parts     = d.split("_")
-        difficulty= int(parts[-1])
-        level     = parts[1]
-        topic     = "_".join(parts[2:-1])
+        parts      = d.split("_")
+        difficulty = int(parts[-1])
+        level      = parts[1]
+        topic      = "_".join(parts[2:-1])
         await _send_exercise(q, ctx, level, topic, difficulty)
         return WAIT_ANSWER
 
@@ -142,20 +134,20 @@ async def on_button(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown", reply_markup=donate_menu()
         )
 
-        elif d == "donar_estrellas":
-    await q.edit_message_text(
-        "⭐ *Donar Estrellas de Telegram*\n\n"
-        "Las Estrellas son la moneda oficial de Telegram.\n\n"
-        "*Cómo donarme Estrellas:*\n"
-        "1. Abre Telegram y busca *@mkoi.alex*\n"
-        "2. Abre mi perfil\n"
-        "3. Toca los tres puntos *( ... )*\n"
-        "4. Selecciona *'Enviar regalo'*\n"
-        "5. Elige la cantidad de Estrellas ⭐\n\n"
-        "¡Cualquier cantidad es muy apreciada! 🙏\n"
-        "Las Estrellas me ayudan a mantener el bot gratuito para todos. 💪",
-        parse_mode="Markdown", reply_markup=back("donar")
-    )
+    elif d == "donar_estrellas":
+        await q.edit_message_text(
+            "⭐ *Donar Estrellas de Telegram*\n\n"
+            "Las Estrellas son la moneda oficial de Telegram.\n\n"
+            "*Cómo donarme Estrellas:*\n"
+            "1. Abre Telegram y busca *@mkoialex*\n"
+            "2. Abre mi perfil\n"
+            "3. Toca los tres puntos *( ... )*\n"
+            "4. Selecciona *'Enviar regalo'*\n"
+            "5. Elige la cantidad de Estrellas ⭐\n\n"
+            "¡Cualquier cantidad es muy apreciada! 🙏\n"
+            "Las Estrellas me ayudan a mantener el bot gratuito para todos. 💪",
+            parse_mode="Markdown", reply_markup=back("donar")
+        )
 
     elif d == "donar_ton":
         await q.edit_message_text(
@@ -171,9 +163,6 @@ async def on_button(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Acerca del bot
-# ─────────────────────────────────────────────────────────────────────────────
 async def _show_about(q):
     text = (
         "ℹ️ *Acerca de MathMaster Bot*\n\n"
@@ -207,25 +196,20 @@ async def _show_about(q):
     await q.edit_message_text(text, parse_mode="Markdown", reply_markup=kb)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Resolver problemas escritos
-# ─────────────────────────────────────────────────────────────────────────────
 async def handle_solver(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
-    uid  = update.effective_user.id
-
     try:
         result = _solve_expression(text)
         await update.message.reply_text(result, parse_mode="Markdown", reply_markup=_solver_kb())
     except Exception as e:
         await update.message.reply_text(
-            f"⚠️ No pude interpretar eso.\n\n"
-            f"*Prueba con formatos como:*\n"
-            f"• `2x + 5 = 11`\n"
-            f"• `x^2 - 4 = 0`\n"
-            f"• `derive x^3 + 2x`\n"
-            f"• `integra x^2`\n"
-            f"• `simplifica (x^2-1)/(x-1)`",
+            "⚠️ No pude interpretar eso.\n\n"
+            "*Prueba con formatos como:*\n"
+            "• `2x + 5 = 11`\n"
+            "• `x^2 - 4 = 0`\n"
+            "• `derive x^3 + 2x`\n"
+            "• `integra x^2`\n"
+            "• `simplifica (x^2-1)/(x-1)`",
             parse_mode="Markdown", reply_markup=_solver_kb()
         )
     return WAIT_SOLVE
@@ -234,81 +218,60 @@ async def handle_solver(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 def _solve_expression(text: str) -> str:
     t = text.lower().replace("^", "**")
 
-    # Derivar
     if any(w in t for w in ["derive", "deriva", "derivada", "d/dx"]):
         expr_str = t
         for w in ["derive", "deriva", "derivada de", "d/dx", "d/dx de"]:
             expr_str = expr_str.replace(w, "").strip()
         expr = sympify(expr_str)
         result = diff(expr, x)
-        return (f"∂ *Derivada*\n\n"
-                f"f(x) = `{expr}`\n\n"
-                f"📝 *Procedimiento:*\n"
-                f"Aplicando reglas de derivación...\n\n"
-                f"f'(x) = `{result}`\n\n"
-                f"✅ *Resultado: {result}*")
+        return (f"∂ *Derivada*\n\nf(x) = `{expr}`\n\n"
+                f"📝 *Procedimiento:*\nAplicando reglas de derivación...\n\n"
+                f"f'(x) = `{result}`\n\n✅ *Resultado: {result}*")
 
-    # Integrar
     if any(w in t for w in ["integra", "integral", "∫"]):
         expr_str = t
         for w in ["integra", "integral de", "integral"]:
             expr_str = expr_str.replace(w, "").strip()
         expr = sympify(expr_str)
         result = integrate(expr, x)
-        return (f"∫ *Integral*\n\n"
-                f"∫ `{expr}` dx\n\n"
-                f"📝 *Procedimiento:*\n"
-                f"Aplicando reglas de integración...\n\n"
-                f"= `{result}` + C\n\n"
-                f"✅ *Resultado: {result} + C*")
+        return (f"∫ *Integral*\n\n∫ `{expr}` dx\n\n"
+                f"📝 *Procedimiento:*\nAplicando reglas de integración...\n\n"
+                f"= `{result}` + C\n\n✅ *Resultado: {result} + C*")
 
-    # Simplificar
     if any(w in t for w in ["simplifica", "simplify"]):
         expr_str = t.replace("simplifica", "").replace("simplify", "").strip()
         expr   = sympify(expr_str)
         result = simplify(expr)
         return f"🔄 *Simplificación*\n\n`{expr}` = `{result}`\n\n✅ *Resultado: {result}*"
 
-    # Factorizar
     if any(w in t for w in ["factoriza", "factor"]):
         expr_str = t.replace("factoriza", "").replace("factor", "").strip()
         expr   = sympify(expr_str)
         result = sp.factor(expr)
         return f"🔢 *Factorización*\n\n`{expr}` = `{result}`\n\n✅ *Resultado: {result}*"
 
-    # Ecuación con =
     if "=" in text:
         lhs, rhs = text.split("=", 1)
         lhs_expr = sympify(lhs.replace("^","**"))
         rhs_expr = sympify(rhs.replace("^","**"))
         equation = lhs_expr - rhs_expr
         solutions = solve(equation, x)
-
         if not solutions:
             return "⚠️ No encontré soluciones reales para esta ecuación."
-
-        steps = (f"⚖️ *Resolviendo ecuación*\n\n"
-                 f"`{text}`\n\n"
-                 f"📝 *Procedimiento:*\n"
-                 f"Reordenando: `{equation} = 0`\n"
-                 f"Despejando x...\n\n")
-
+        steps = (f"⚖️ *Resolviendo ecuación*\n\n`{text}`\n\n"
+                 f"📝 *Procedimiento:*\nReordenando: `{equation} = 0`\nDespejando x...\n\n")
         if len(solutions) == 1:
             steps += f"✅ *Solución: x = {solutions[0]}*"
         else:
             sols = " | ".join([f"x = {s}" for s in solutions])
             steps += f"✅ *Soluciones: {sols}*"
-
-        # Verificación
         steps += "\n\n*Verificación:*\n"
         for s in solutions:
             val_l = lhs_expr.subs(x, s)
             val_r = rhs_expr.subs(x, s)
             steps += f"x={s}: {val_l} = {val_r} ✅\n"
-
         return steps
 
-    # Expresión general — evaluar/simplificar
     expr   = sympify(t)
     result = simplify(expr)
     return f"🔢 *Expresión*\n\n`{expr}` = `{result}`\n\n✅ *Resultado: {result}*"
@@ -322,20 +285,14 @@ def _solver_kb():
     ])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Graficar funciones
-# ─────────────────────────────────────────────────────────────────────────────
 async def handle_grapher(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
-
     try:
         expr = sympify(text.replace("^", "**"))
         f    = sp.lambdify(x, expr, "numpy")
-
         import numpy as np
         xs = np.linspace(-10, 10, 500)
         ys = f(xs)
-
         fig, ax = plt.subplots(figsize=(8, 5))
         ax.plot(xs, ys, color="#c0392b", linewidth=2)
         ax.axhline(0, color='white', linewidth=0.8)
@@ -349,12 +306,10 @@ async def handle_grapher(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         ax.set_ylabel("f(x)", color='white')
         ax.grid(True, alpha=0.2, color='gray')
         ax.set_ylim(-50, 50)
-
         buf = io.BytesIO()
         plt.savefig(buf, format='png', bbox_inches='tight', dpi=120)
         buf.seek(0)
         plt.close()
-
         kb = Markup([
             [Btn("📈 Otra función", callback_data="graficar"),
              Btn("🏠 Inicio",       callback_data="inicio")],
@@ -379,9 +334,6 @@ async def handle_grapher(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     return WAIT_GRAPH
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Ejercicios
-# ─────────────────────────────────────────────────────────────────────────────
 async def _send_exercise(target, ctx, level, topic, difficulty=1):
     ex = generate(level, topic, difficulty)
     ctx.user_data.update({"ex": ex, "level": level, "topic": topic,
@@ -419,9 +371,6 @@ async def _send_exam_question(target, ctx):
         await target.message.reply_text(text, parse_mode="Markdown", reply_markup=kb)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Progreso y Ranking
-# ─────────────────────────────────────────────────────────────────────────────
 async def _show_progress(q, user):
     db    = get_user(user.id)
     stats = get_stats(user.id)
@@ -454,15 +403,12 @@ async def _show_ranking(q):
     await q.edit_message_text(text, parse_mode="Markdown", reply_markup=back())
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Respuestas de texto
-# ─────────────────────────────────────────────────────────────────────────────
 async def on_text(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     mode = ctx.user_data.get("mode")
-    if mode == "exercise": return await _handle_exercise_answer(update, ctx)
-    elif mode == "exam":   return await _handle_exam_answer(update, ctx)
-    elif mode == "solver": return await handle_solver(update, ctx)
-    elif mode == "grapher":return await handle_grapher(update, ctx)
+    if mode == "exercise":  return await _handle_exercise_answer(update, ctx)
+    elif mode == "exam":    return await _handle_exam_answer(update, ctx)
+    elif mode == "solver":  return await handle_solver(update, ctx)
+    elif mode == "grapher": return await handle_grapher(update, ctx)
     else:
         await update.message.reply_text("👇 Usa el menú:", reply_markup=main_menu())
 
@@ -499,7 +445,6 @@ async def _handle_exam_answer(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if correct: ctx.user_data["exam_correct"] += 1
     fb = f"✅ ¡Correcto!\n\n{q['proc']}" if correct else f"❌ Incorrecto\nRespuesta: `{q['a']}`\n\n{q['proc']}"
     ctx.user_data["exam_idx"] += 1
-
     if ctx.user_data["exam_idx"] >= EXAM_QUESTIONS:
         score = ctx.user_data["exam_correct"]
         total = EXAM_QUESTIONS
