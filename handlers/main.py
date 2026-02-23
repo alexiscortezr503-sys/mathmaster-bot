@@ -185,8 +185,8 @@ async def _show_about(q):
         "Desarrollado con Python, SymPy y python-telegram-bot.\n"
         "Motor matemático real que verifica respuestas algebraicamente.\n\n"
         "👨‍💻 *Desarrollador:*\n"
-        "Alexis Granados Cortez — Full Stack Developer\n"
-        "📸 @mkoi.alex\n\n"
+        "Alexis — Full Stack Developer\n"
+        "📸 @mkoialex\n\n"
         "💝 *¿Te ayudó el bot?* Apóyalo con una donación para mantenerlo gratuito para todos."
     )
     kb = Markup([
